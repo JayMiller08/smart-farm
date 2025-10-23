@@ -33,10 +33,16 @@ const Profile = () => {
               <User className="h-5 w-5" />
               Farm Profile Setup
             </CardTitle>
-            <CardDescription>Coming soon - Set up your farm details</CardDescription>
+            <CardDescription>Manage your farm fields and crops</CardDescription>
           </CardHeader>
-          <CardContent className="text-center py-8 text-muted-foreground">
-            <p>Farm profile setup will be available in the next update.</p>
+          <CardContent>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate("/farm-profile")}
+            >
+              Manage Farm Profile
+            </Button>
           </CardContent>
         </Card>
 

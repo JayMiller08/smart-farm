@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 const Calculators = () => {
   const navigate = useNavigate();
   const [fertilizerResult, setFertilizerResult] = useState<any>(null);
+  const [pesticideResult, setPesticideResult] = useState<any>(null);
+  const [irrigationResult, setIrrigationResult] = useState<any>(null);
 
   const calculateFertilizer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,6 +33,79 @@ const Calculators = () => {
       cost,
       savings,
       timing: "Apply at planting and repeat after 4-6 weeks",
+    });
+  };
+
+  const calculatePesticide = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const area = parseFloat(formData.get("area") as string);
+    const pestType = formData.get("pestType") as string;
+    const infestation = formData.get("infestation") as string;
+
+    // Simple calculation logic
+    const baseAmount = area * 2;
+    const multiplier = infestation === "high" ? 1.5 : infestation === "medium" ? 1.2 : 1;
+    const amount = Math.round(baseAmount * multiplier * 100) / 100;
+    const cost = Math.round(amount * 120);
+
+    const pesticideNames: Record<string, string> = {
+      aphids: "Imidacloprid",
+      whiteflies: "Acetamiprid",
+      blight: "Mancozeb",
+      cutworms: "Cypermethrin",
+      fungus: "Copper Oxychloride",
+    };
+
+    setPesticideResult({
+      pestType,
+      pesticide: pesticideNames[pestType] || "Contact local agricultural advisor",
+      amount: `${amount} liters`,
+      cost,
+      instructions: "Apply early morning or late evening. Wear protective equipment. Avoid windy conditions.",
+      safety: "Keep away from children and pets. Do not apply before rain. Follow label instructions.",
+    });
+  };
+
+  const calculateIrrigation = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const size = parseFloat(formData.get("fieldSize") as string);
+    const cropType = formData.get("cropType") as string;
+    const soilType = formData.get("soilType") as string;
+
+    // Simple calculation logic based on crop water requirements
+    const cropWaterReq: Record<string, number> = {
+      maize: 500,
+      citrus: 700,
+      tomatoes: 600,
+      sugarcane: 800,
+      vegetables: 450,
+    };
+
+    const soilMultiplier: Record<string, number> = {
+      sandy: 1.3,
+      loam: 1.0,
+      clay: 0.8,
+      "sandy-loam": 1.1,
+    };
+
+    const dailyWater = Math.round(
+      size * 10000 * (cropWaterReq[cropType] || 500) / 150 * (soilMultiplier[soilType] || 1)
+    );
+    const weeklyWater = dailyWater * 7;
+
+    setIrrigationResult({
+      dailyWater,
+      weeklyWater,
+      frequency: soilType === "sandy" ? "Daily" : soilType === "clay" ? "Every 3-4 days" : "Every 2-3 days",
+      optimalTime: "Early morning (5-7 AM) or evening (5-7 PM)",
+      tips: [
+        "Monitor soil moisture regularly",
+        "Adjust for rainfall",
+        "Use mulch to reduce evaporation",
+        "Check for uniform water distribution",
+      ],
     });
   };
 
@@ -172,11 +247,92 @@ const Calculators = () => {
           <TabsContent value="pesticide">
             <Card className="shadow-medium">
               <CardHeader>
-                <CardTitle>Pesticide Calculator</CardTitle>
-                <CardDescription>Coming soon - Calculate pesticide requirements</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <CalcIcon className="h-5 w-5 text-primary" />
+                  Pesticide Calculator
+                </CardTitle>
+                <CardDescription>Calculate pesticide requirements for pest control</CardDescription>
               </CardHeader>
-              <CardContent className="text-center py-8 text-muted-foreground">
-                <p>This calculator will help you determine the right amount of pesticide needed.</p>
+              <CardContent>
+                <form onSubmit={calculatePesticide} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="pestType">Pest/Disease Type</Label>
+                    <Select name="pestType" defaultValue="aphids">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="aphids">Aphids</SelectItem>
+                        <SelectItem value="whiteflies">Whiteflies</SelectItem>
+                        <SelectItem value="blight">Blight</SelectItem>
+                        <SelectItem value="cutworms">Cutworms</SelectItem>
+                        <SelectItem value="fungus">Fungus</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="area">Affected Area (hectares)</Label>
+                    <Input
+                      id="area"
+                      name="area"
+                      type="number"
+                      step="0.1"
+                      placeholder="e.g., 3"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="infestation">Infestation Level</Label>
+                    <Select name="infestation" defaultValue="medium">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button type="submit" className="w-full" size="lg">Calculate</Button>
+                </form>
+
+                {pesticideResult && (
+                  <div className="mt-6 space-y-4">
+                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                      <h3 className="font-semibold mb-2">Recommended Pesticide</h3>
+                      <p className="text-lg font-bold text-primary">{pesticideResult.pesticide}</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        For {pesticideResult.pestType}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Required Amount</span>
+                        <span className="font-semibold">{pesticideResult.amount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Estimated Cost</span>
+                        <span className="font-semibold">R {pesticideResult.cost}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 space-y-3 border-t">
+                      <div>
+                        <p className="text-sm font-semibold mb-1">Application Instructions:</p>
+                        <p className="text-sm text-muted-foreground">{pesticideResult.instructions}</p>
+                      </div>
+                      <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                        <p className="text-sm font-semibold mb-1 text-destructive">Safety Precautions:</p>
+                        <p className="text-sm text-muted-foreground">{pesticideResult.safety}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -185,11 +341,99 @@ const Calculators = () => {
           <TabsContent value="irrigation">
             <Card className="shadow-medium">
               <CardHeader>
-                <CardTitle>Irrigation Calculator</CardTitle>
-                <CardDescription>Coming soon - Calculate water requirements</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <CalcIcon className="h-5 w-5 text-primary" />
+                  Irrigation Calculator
+                </CardTitle>
+                <CardDescription>Calculate optimal water requirements</CardDescription>
               </CardHeader>
-              <CardContent className="text-center py-8 text-muted-foreground">
-                <p>This calculator will help you optimize your irrigation schedule.</p>
+              <CardContent>
+                <form onSubmit={calculateIrrigation} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cropType">Crop Type</Label>
+                    <Select name="cropType" defaultValue="maize">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="maize">Maize</SelectItem>
+                        <SelectItem value="citrus">Citrus</SelectItem>
+                        <SelectItem value="tomatoes">Tomatoes</SelectItem>
+                        <SelectItem value="sugarcane">Sugarcane</SelectItem>
+                        <SelectItem value="vegetables">Vegetables</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fieldSize">Field Size (hectares)</Label>
+                    <Input
+                      id="fieldSize"
+                      name="fieldSize"
+                      type="number"
+                      step="0.1"
+                      placeholder="e.g., 5"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="soilType">Soil Type</Label>
+                    <Select name="soilType" defaultValue="loam">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sandy">Sandy</SelectItem>
+                        <SelectItem value="loam">Loam</SelectItem>
+                        <SelectItem value="clay">Clay</SelectItem>
+                        <SelectItem value="sandy-loam">Sandy Loam</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button type="submit" className="w-full" size="lg">Calculate</Button>
+                </form>
+
+                {irrigationResult && (
+                  <div className="mt-6 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg text-center">
+                        <p className="text-sm text-muted-foreground mb-1">Daily Water</p>
+                        <p className="text-2xl font-bold text-primary">{irrigationResult.dailyWater.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">liters</p>
+                      </div>
+                      <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg text-center">
+                        <p className="text-sm text-muted-foreground mb-1">Weekly Water</p>
+                        <p className="text-2xl font-bold text-primary">{irrigationResult.weeklyWater.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">liters</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Irrigation Frequency</span>
+                        <span className="font-semibold">{irrigationResult.frequency}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Optimal Time</span>
+                        <span className="font-semibold">{irrigationResult.optimalTime}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t">
+                      <p className="text-sm font-semibold mb-2">Water Conservation Tips:</p>
+                      <ul className="space-y-1">
+                        {irrigationResult.tips.map((tip: string, index: number) => (
+                          <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                            <span className="text-primary mt-0.5">•</span>
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

@@ -93,9 +93,16 @@ const Login = () => {
               <Button type="submit" className="w-full" size="lg" variant="hero">
                 Sign In
               </Button>
-              <div className="text-center text-sm text-muted-foreground">
-                Demo: Use any email to sign in
-              </div>
+              <p className="text-center text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => navigate("/signup")}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign Up
+                </button>
+              </p>
             </form>
           </CardContent>
         </Card>
