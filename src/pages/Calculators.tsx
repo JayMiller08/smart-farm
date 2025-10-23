@@ -113,34 +113,34 @@ const Calculators = () => {
     <div className="min-h-screen bg-muted/30 pb-20 md:pb-6">
       {/* Header */}
       <header className="bg-card border-b shadow-soft">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-3">
+        <div className="container mx-auto px-3 md:px-4 py-3 md:py-4 flex items-center gap-2 md:gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold">Input Calculators</h1>
-            <p className="text-sm text-muted-foreground">Optimize your farm inputs</p>
+            <h1 className="text-lg md:text-xl font-bold">Input Calculators</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">Optimize your farm inputs</p>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-3 md:px-4 py-4 md:py-6">
         <Tabs defaultValue="fertilizer" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="fertilizer">Fertilizer</TabsTrigger>
-            <TabsTrigger value="pesticide">Pesticide</TabsTrigger>
-            <TabsTrigger value="irrigation">Irrigation</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 h-auto">
+            <TabsTrigger value="fertilizer" className="text-xs md:text-sm py-2">Fertilizer</TabsTrigger>
+            <TabsTrigger value="pesticide" className="text-xs md:text-sm py-2">Pesticide</TabsTrigger>
+            <TabsTrigger value="irrigation" className="text-xs md:text-sm py-2">Irrigation</TabsTrigger>
           </TabsList>
 
           {/* Fertilizer Calculator */}
           <TabsContent value="fertilizer">
             <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CalcIcon className="h-5 w-5 text-primary" />
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-2xl">
+                  <CalcIcon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   Fertilizer Calculator
                 </CardTitle>
-                <CardDescription>Calculate optimal fertilizer amounts for your crops</CardDescription>
+                <CardDescription className="text-xs md:text-sm">Calculate optimal fertilizer amounts for your crops</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={calculateFertilizer} className="space-y-4">
@@ -246,12 +246,12 @@ const Calculators = () => {
           {/* Pesticide Calculator */}
           <TabsContent value="pesticide">
             <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CalcIcon className="h-5 w-5 text-primary" />
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-2xl">
+                  <CalcIcon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   Pesticide Calculator
                 </CardTitle>
-                <CardDescription>Calculate pesticide requirements for pest control</CardDescription>
+                <CardDescription className="text-xs md:text-sm">Calculate pesticide requirements for pest control</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={calculatePesticide} className="space-y-4">
@@ -340,12 +340,12 @@ const Calculators = () => {
           {/* Irrigation Calculator */}
           <TabsContent value="irrigation">
             <Card className="shadow-medium">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CalcIcon className="h-5 w-5 text-primary" />
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-2xl">
+                  <CalcIcon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   Irrigation Calculator
                 </CardTitle>
-                <CardDescription>Calculate optimal water requirements</CardDescription>
+                <CardDescription className="text-xs md:text-sm">Calculate optimal water requirements</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={calculateIrrigation} className="space-y-4">

@@ -73,41 +73,41 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-muted/30 pb-20 md:pb-6">
       {/* Header */}
       <header className="bg-card border-b shadow-soft">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Sprout className="h-8 w-8 text-primary" />
+        <div className="container mx-auto px-3 md:px-4 py-3 md:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Sprout className="h-6 w-6 md:h-8 md:w-8 text-primary" />
             <div>
-              <h1 className="text-xl font-bold">Smart Farm</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, {userName}</p>
+              <h1 className="text-lg md:text-xl font-bold">Smart Farm</h1>
+              <p className="text-xs md:text-sm text-muted-foreground">Welcome back, {userName}</p>
             </div>
           </div>
           <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
+            <Bell className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
+      <main className="container mx-auto px-3 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Weather Widget */}
         <WeatherWidget />
 
         {/* Quick Farming Tips */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Quick Farming Tips</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h2 className="text-base md:text-lg font-semibold">Quick Farming Tips</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             {farmingTips.map((tip) => (
               <Card key={tip.title} className="shadow-soft">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <tip.icon className="h-5 w-5 text-primary" />
+                <CardHeader className="p-3 md:p-4 pb-2 md:pb-3">
+                  <div className="flex items-start gap-2 md:gap-3">
+                    <div className="p-1.5 md:p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                      <tip.icon className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-base mb-2">{tip.title}</CardTitle>
-                      <CardDescription className="text-sm leading-relaxed">
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-sm md:text-base mb-1 md:mb-2">{tip.title}</CardTitle>
+                      <CardDescription className="text-xs md:text-sm leading-relaxed">
                         {tip.tip}
                       </CardDescription>
                     </div>
@@ -121,29 +121,30 @@ const Dashboard = () => {
         {/* Tips From Sensors */}
         {iotEnabled && (
           <Card className="shadow-soft border-primary/30">
-            <CardHeader>
+            <CardHeader className="p-4 md:p-6">
               <div className="flex items-center gap-2">
-                <Radio className="h-5 w-5 text-primary" />
-                <CardTitle>Tips From Sensors</CardTitle>
+                <Radio className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                <CardTitle className="text-base md:text-lg">Tips From Sensors</CardTitle>
               </div>
-              <CardDescription>AI insights based on your field data</CardDescription>
+              <CardDescription className="text-xs md:text-sm">AI insights based on your field data</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2 md:space-y-3 p-4 md:p-6 pt-0">
               {getSensorTips().map((tip, idx) => (
                 <div
                   key={idx}
-                  className={`p-3 rounded-lg border ${
+                  className={`p-2.5 md:p-3 rounded-lg border ${
                     tip.severity === "success"
                       ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800"
                       : "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800"
                   }`}
                 >
-                  <p className="text-sm">{tip.message}</p>
+                  <p className="text-xs md:text-sm">{tip.message}</p>
                 </div>
               ))}
               <Button
                 variant="outline"
                 className="w-full mt-2"
+                size="sm"
                 onClick={() => navigate("/iot-dashboard")}
               >
                 View Live Dashboard
@@ -154,41 +155,19 @@ const Dashboard = () => {
 
         {/* Farm Overview */}
         <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle>Farm Overview</CardTitle>
-            <CardDescription>Your registered fields</CardDescription>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-base md:text-lg">Farm Overview</CardTitle>
+            <CardDescription className="text-xs md:text-sm">Your registered fields</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Sprout className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="mb-3">No fields registered yet</p>
-              <Button onClick={() => navigate("/profile")}>Set Up Farm Profile</Button>
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="text-center py-6 md:py-8 text-muted-foreground">
+              <Sprout className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-2 md:mb-3 opacity-50" />
+              <p className="text-xs md:text-sm mb-3">No fields registered yet</p>
+              <Button onClick={() => navigate("/profile")} size="sm">Set Up Farm Profile</Button>
             </div>
           </CardContent>
         </Card>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t shadow-large md:hidden">
-        <div className="flex items-center justify-around py-2">
-          <Button variant="ghost" size="sm" className="flex-col h-auto py-2" onClick={() => navigate("/dashboard")}>
-            <Sprout className="h-5 w-5 mb-1" />
-            <span className="text-xs">Home</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex-col h-auto py-2" onClick={() => navigate("/weather")}>
-            <CloudRain className="h-5 w-5 mb-1" />
-            <span className="text-xs">Weather</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex-col h-auto py-2" onClick={() => navigate("/ai-advisor")}>
-            <MessageSquare className="h-5 w-5 mb-1" />
-            <span className="text-xs">AI</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="flex-col h-auto py-2" onClick={() => navigate("/calculators")}>
-            <Calculator className="h-5 w-5 mb-1" />
-            <span className="text-xs">Tools</span>
-          </Button>
-        </div>
-      </nav>
     </div>
   );
 };

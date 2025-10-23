@@ -111,21 +111,22 @@ export default function IoTDashboard() {
   return (
     <div className="min-h-screen bg-muted/30 pb-20 md:pb-6">
       <header className="bg-card border-b shadow-soft">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-3">
+        <div className="container mx-auto px-3 md:px-4 py-3 md:py-4 flex items-center gap-2 md:gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold">IoT Sensor Monitoring</h1>
-            <p className="text-sm text-muted-foreground">Real-time field data</p>
+            <h1 className="text-lg md:text-xl font-bold">IoT Sensor Monitoring</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">Real-time field data</p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-muted'}`} />
-            <span className="text-sm hidden sm:inline">{isLive ? 'Live' : 'Paused'}</span>
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-muted'}`} />
+            <span className="text-xs md:text-sm hidden sm:inline">{isLive ? 'Live' : 'Paused'}</span>
             <Button
               onClick={() => setIsLive(!isLive)}
               variant="outline"
               size="sm"
+              className="text-xs"
             >
               {isLive ? 'Pause' : 'Resume'}
             </Button>
@@ -133,7 +134,7 @@ export default function IoTDashboard() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
+      <main className="container mx-auto px-3 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Alert Banner */}
         {sensorData.alerts.length > 0 && (
           <Alert className="border-amber-500 bg-amber-50">
@@ -149,7 +150,7 @@ export default function IoTDashboard() {
         )}
 
         {/* Sensor Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {/* Soil Moisture */}
           <SensorCard
             icon={<Droplets className="w-6 h-6 text-blue-500" />}
@@ -225,50 +226,60 @@ export default function IoTDashboard() {
 
         {/* 24-Hour Trends Chart */}
         <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle>24-Hour Trends</CardTitle>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-base md:text-lg">24-Hour Trends</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={historicalData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="time" 
-                  tick={{ fontSize: 12 }}
-                  interval={3}
-                />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '6px'
-                  }}
-                />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="soilMoisture" 
-                  stroke="hsl(var(--primary))" 
-                  name="Soil Moisture (%)"
-                  strokeWidth={2}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="soilTemp" 
-                  stroke="hsl(var(--accent))" 
-                  name="Soil Temp (°C)"
-                  strokeWidth={2}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="airTemp" 
-                  stroke="hsl(var(--secondary))" 
-                  name="Air Temp (°C)"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="w-full overflow-x-auto">
+              <ResponsiveContainer width="100%" height={250} minWidth={300}>
+                <LineChart data={historicalData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="time" 
+                    tick={{ fontSize: 10 }}
+                    interval={3}
+                    stroke="hsl(var(--muted-foreground))"
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 10 }} 
+                    stroke="hsl(var(--muted-foreground))"
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '6px',
+                      fontSize: '12px'
+                    }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px' }} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="soilMoisture" 
+                    stroke="hsl(var(--primary))" 
+                    name="Soil Moisture (%)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="soilTemp" 
+                    stroke="hsl(var(--accent))" 
+                    name="Soil Temp (°C)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="airTemp" 
+                    stroke="hsl(var(--secondary))" 
+                    name="Air Temp (°C)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
 
@@ -298,13 +309,13 @@ function SensorCard({ icon, label, value, unit, status, optimal }: {
 
   return (
     <Card className="shadow-soft">
-      <CardContent className="pt-6">
-        <div className="flex items-center gap-2 mb-2">
-          {icon}
-          <span className="font-semibold text-sm">{label}</span>
+      <CardContent className="p-3 md:p-4 md:pt-6 pt-4">
+        <div className="flex items-center gap-2 mb-2 flex-shrink-0">
+          <div className="flex-shrink-0">{icon}</div>
+          <span className="font-semibold text-xs md:text-sm truncate">{label}</span>
         </div>
-        <div className="text-3xl font-bold mb-1">
-          {value}<span className="text-lg text-muted-foreground">{unit}</span>
+        <div className="text-2xl md:text-3xl font-bold mb-1">
+          {value}<span className="text-base md:text-lg text-muted-foreground">{unit}</span>
         </div>
         {optimal && (
           <div className="text-xs text-muted-foreground mb-2">Optimal: {optimal}</div>

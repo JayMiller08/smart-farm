@@ -15,18 +15,18 @@ const Profile = () => {
     <div className="min-h-screen bg-muted/30 pb-20 md:pb-6">
       {/* Header */}
       <header className="bg-card border-b shadow-soft">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-3">
+        <div className="container mx-auto px-3 md:px-4 py-3 md:py-4 flex items-center gap-2 md:gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold">Profile & Settings</h1>
-            <p className="text-sm text-muted-foreground">Manage your account</p>
+            <h1 className="text-lg md:text-xl font-bold">Profile & Settings</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">Manage your account</p>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
+      <main className="container mx-auto px-3 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         <Card className="shadow-medium">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
