@@ -1,4 +1,4 @@
-import { Home, Cloud, Sparkles, Calculator, User } from "lucide-react";
+import { Home, Cloud, Sparkles, Calculator, User, Radio } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -17,6 +17,7 @@ const items = [
   { title: "Weather", url: "/weather", icon: Cloud },
   { title: "Farm AI", url: "/ai-advisor", icon: Sparkles },
   { title: "Calculators", url: "/calculators", icon: Calculator },
+  { title: "IoT Sensors", url: "/iot-dashboard", icon: Radio },
   { title: "Profile", url: "/profile", icon: User },
 ];
 

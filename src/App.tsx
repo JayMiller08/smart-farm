@@ -15,6 +15,7 @@ import Calculators from "./pages/Calculators";
 import PestIdentifier from "./pages/PestIdentifier";
 import Profile from "./pages/Profile";
 import FarmProfileSetup from "./pages/FarmProfileSetup";
+import IoTDashboard from "./pages/IoTDashboard";
 import NotFound from "./pages/NotFound";
 
 const AppContent = () => {
@@ -36,6 +37,7 @@ const AppContent = () => {
                 <Route path="/pest-identifier" element={<PestIdentifier />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/farm-profile" element={<FarmProfileSetup />} />
+                <Route path="/iot-dashboard" element={<IoTDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <BottomNav />

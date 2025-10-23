@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, CloudRain, Calculator, Bug, Sprout, Bell } from "lucide-react";
+import { MessageSquare, CloudRain, Calculator, Bug, Sprout, Bell, Radio } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import WeatherWidget from "@/components/WeatherWidget";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
+  const [iotEnabled, setIotEnabled] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem("smartfarm_user");
@@ -15,6 +16,12 @@ const Dashboard = () => {
       navigate("/");
     } else {
       setUserName(user.split("@")[0]);
+      try {
+        const userData = JSON.parse(localStorage.getItem("smartfarm_user") || "{}");
+        setIotEnabled(userData.iotEnabled || false);
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
     }
   }, [navigate]);
 
@@ -48,6 +55,14 @@ const Dashboard = () => {
       variant: "default" as const,
     },
   ];
+
+  const iotAction = {
+    title: "IoT Sensors",
+    description: "Live field monitoring",
+    icon: Radio,
+    path: "/iot-dashboard",
+    variant: "accent" as const,
+  };
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -100,6 +115,23 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
             ))}
+            {iotEnabled && (
+              <Card
+                className="cursor-pointer hover:shadow-medium transition-shadow border-primary/50"
+                onClick={() => navigate(iotAction.path)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="p-2 rounded-lg bg-primary/10 relative">
+                      <iotAction.icon className="h-5 w-5 text-primary" />
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                    </div>
+                  </div>
+                  <CardTitle className="text-base">{iotAction.title}</CardTitle>
+                  <CardDescription className="text-sm">{iotAction.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            )}
           </div>
         </div>
 

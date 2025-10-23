@@ -22,6 +22,7 @@ const FarmProfileSetup = () => {
   const { toast } = useToast();
   const [fields, setFields] = useState<Field[]>([]);
   const [showAddField, setShowAddField] = useState(false);
+  const [iotEnabled, setIotEnabled] = useState(false);
   const [newField, setNewField] = useState({
     name: "",
     size: "",
@@ -77,6 +78,7 @@ const FarmProfileSetup = () => {
     // Save to localStorage (in production would use backend)
     const userData = JSON.parse(localStorage.getItem("smartfarm_user") || "{}");
     userData.fields = fields;
+    userData.iotEnabled = iotEnabled;
     localStorage.setItem("smartfarm_user", JSON.stringify(userData));
 
     toast({
@@ -273,6 +275,44 @@ const FarmProfileSetup = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* IoT Monitoring Toggle */}
+        <Card className="shadow-medium">
+          <CardHeader>
+            <CardTitle>IoT Sensor Monitoring</CardTitle>
+            <CardDescription>Enable real-time field monitoring with IoT sensors</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="iot-enabled"
+                checked={iotEnabled}
+                onChange={(e) => setIotEnabled(e.target.checked)}
+                className="w-4 h-4 rounded border-input"
+              />
+              <label htmlFor="iot-enabled" className="text-sm font-medium cursor-pointer">
+                Enable IoT Sensor Monitoring
+              </label>
+            </div>
+
+            {iotEnabled && (
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <p className="text-sm mb-3 flex items-center gap-2">
+                  <span className="text-primary">✓</span>
+                  IoT sensors connected (simulated)
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate("/iot-dashboard")}
+                >
+                  View Live Dashboard
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Save Button */}
         {fields.length > 0 && (
