@@ -25,43 +25,51 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  const quickActions = [
+  // AI-generated farming tips (simulated)
+  const farmingTips = [
     {
-      title: "AI Advisor",
-      description: "Chat with your farm assistant",
-      icon: MessageSquare,
-      path: "/ai-advisor",
-      variant: "default" as const,
+      title: "Soil Preparation",
+      tip: "Test your soil pH before planting. Most crops prefer a pH between 6.0-7.0 for optimal nutrient absorption.",
+      icon: Sprout,
     },
     {
-      title: "Weather",
-      description: "7-day forecast & insights",
+      title: "Water Management",
+      tip: "Water crops early morning to reduce evaporation. Drip irrigation can save up to 50% more water than traditional methods.",
       icon: CloudRain,
-      path: "/weather",
-      variant: "accent" as const,
     },
     {
-      title: "Calculators",
-      description: "Fertilizer & input tools",
-      icon: Calculator,
-      path: "/calculators",
-      variant: "secondary" as const,
-    },
-    {
-      title: "Pest Identifier",
-      description: "Diagnose crop issues",
+      title: "Pest Control",
+      tip: "Inspect crops weekly for early pest detection. Natural predators like ladybugs can help control aphid populations.",
       icon: Bug,
-      path: "/pest-identifier",
-      variant: "default" as const,
+    },
+    {
+      title: "Fertilizer Timing",
+      tip: "Apply nitrogen fertilizers in split doses during the growing season for better nutrient uptake and reduced leaching.",
+      icon: Calculator,
     },
   ];
 
-  const iotAction = {
-    title: "IoT Sensors",
-    description: "Live field monitoring",
-    icon: Radio,
-    path: "/iot-dashboard",
-    variant: "accent" as const,
+  // Sensor-based tips (simulated based on typical sensor readings)
+  const getSensorTips = () => {
+    if (!iotEnabled) return [];
+    
+    return [
+      {
+        type: "soil_moisture",
+        message: "Soil moisture at optimal levels (42%). Continue current irrigation schedule.",
+        severity: "success",
+      },
+      {
+        type: "temperature",
+        message: "Day/night temperature differential is ideal for crop growth.",
+        severity: "success",
+      },
+      {
+        type: "npk",
+        message: "Nitrogen levels slightly low. Consider applying 20kg/ha of urea fertilizer this week.",
+        severity: "warning",
+      },
+    ];
   };
 
   return (
@@ -86,54 +94,63 @@ const Dashboard = () => {
         {/* Weather Widget */}
         <WeatherWidget />
 
-        {/* Quick Actions */}
+        {/* Quick Farming Tips */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map((action) => (
-              <Card
-                key={action.title}
-                className="cursor-pointer hover:shadow-medium transition-shadow"
-                onClick={() => navigate(action.path)}
-              >
+          <h2 className="text-lg font-semibold">Quick Farming Tips</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {farmingTips.map((tip) => (
+              <Card key={tip.title} className="shadow-soft">
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className={`p-2 rounded-lg ${
-                      action.variant === 'accent' ? 'bg-accent/10' : 
-                      action.variant === 'secondary' ? 'bg-secondary/10' : 
-                      'bg-primary/10'
-                    }`}>
-                      <action.icon className={`h-5 w-5 ${
-                        action.variant === 'accent' ? 'text-accent' : 
-                        action.variant === 'secondary' ? 'text-secondary' : 
-                        'text-primary'
-                      }`} />
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <tip.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-base mb-2">{tip.title}</CardTitle>
+                      <CardDescription className="text-sm leading-relaxed">
+                        {tip.tip}
+                      </CardDescription>
                     </div>
                   </div>
-                  <CardTitle className="text-base">{action.title}</CardTitle>
-                  <CardDescription className="text-sm">{action.description}</CardDescription>
                 </CardHeader>
               </Card>
             ))}
-            {iotEnabled && (
-              <Card
-                className="cursor-pointer hover:shadow-medium transition-shadow border-primary/50"
-                onClick={() => navigate(iotAction.path)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 rounded-lg bg-primary/10 relative">
-                      <iotAction.icon className="h-5 w-5 text-primary" />
-                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                    </div>
-                  </div>
-                  <CardTitle className="text-base">{iotAction.title}</CardTitle>
-                  <CardDescription className="text-sm">{iotAction.description}</CardDescription>
-                </CardHeader>
-              </Card>
-            )}
           </div>
         </div>
+
+        {/* Tips From Sensors */}
+        {iotEnabled && (
+          <Card className="shadow-soft border-primary/30">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Radio className="h-5 w-5 text-primary" />
+                <CardTitle>Tips From Sensors</CardTitle>
+              </div>
+              <CardDescription>AI insights based on your field data</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {getSensorTips().map((tip, idx) => (
+                <div
+                  key={idx}
+                  className={`p-3 rounded-lg border ${
+                    tip.severity === "success"
+                      ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800"
+                      : "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800"
+                  }`}
+                >
+                  <p className="text-sm">{tip.message}</p>
+                </div>
+              ))}
+              <Button
+                variant="outline"
+                className="w-full mt-2"
+                onClick={() => navigate("/iot-dashboard")}
+              >
+                View Live Dashboard
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Farm Overview */}
         <Card className="shadow-soft">

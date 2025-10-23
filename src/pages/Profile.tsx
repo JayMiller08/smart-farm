@@ -61,18 +61,6 @@ const Profile = () => {
             </Button>
           </CardContent>
         </Card>
-
-        <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle>About Smart Farm</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>Version 1.0.0</p>
-            <p>Powered by Lovable AI</p>
-            <p>Weather data from OpenWeatherMap</p>
-            <p className="pt-2 text-xs">© 2025 Smart Farm. Built for Mpumalanga farmers.</p>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );

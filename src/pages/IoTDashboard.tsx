@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface SensorData {
   timestamp: string;
@@ -50,9 +51,35 @@ const generateSensorData = (): SensorData => {
   };
 };
 
+// Generate 24-hour historical data
+const generateHistoricalData = () => {
+  const data = [];
+  const now = new Date();
+  
+  for (let i = 23; i >= 0; i--) {
+    const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+    const hour = time.getHours();
+    
+    // Simulate realistic patterns
+    const soilMoisture = 40 + Math.sin(i / 4) * 10 + Math.random() * 5;
+    const soilTemp = 22 + Math.sin((hour - 6) / 12 * Math.PI) * 4 + Math.random() * 2;
+    const airTemp = 24 + Math.sin((hour - 8) / 12 * Math.PI) * 6 + Math.random() * 2;
+    
+    data.push({
+      time: `${hour.toString().padStart(2, '0')}:00`,
+      soilMoisture: Number(soilMoisture.toFixed(1)),
+      soilTemp: Number(soilTemp.toFixed(1)),
+      airTemp: Number(airTemp.toFixed(1)),
+    });
+  }
+  
+  return data;
+};
+
 export default function IoTDashboard() {
   const navigate = useNavigate();
   const [sensorData, setSensorData] = useState<SensorData | null>(null);
+  const [historicalData] = useState(generateHistoricalData());
   const [isLive, setIsLive] = useState(true);
 
   // Fetch sensor data every 5 seconds when "live"
@@ -196,15 +223,52 @@ export default function IoTDashboard() {
           </Card>
         </div>
 
-        {/* Historical Chart Placeholder */}
+        {/* 24-Hour Trends Chart */}
         <Card className="shadow-soft">
           <CardHeader>
             <CardTitle>24-Hour Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-48 bg-muted/50 rounded flex items-center justify-center text-muted-foreground">
-              Chart: Soil Moisture & Temperature trends
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={historicalData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="time" 
+                  tick={{ fontSize: 12 }}
+                  interval={3}
+                />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '6px'
+                  }}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="soilMoisture" 
+                  stroke="hsl(var(--primary))" 
+                  name="Soil Moisture (%)"
+                  strokeWidth={2}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="soilTemp" 
+                  stroke="hsl(var(--accent))" 
+                  name="Soil Temp (°C)"
+                  strokeWidth={2}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="airTemp" 
+                  stroke="hsl(var(--secondary))" 
+                  name="Air Temp (°C)"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
