@@ -78,7 +78,7 @@ export function AppSidebar() {
                 <button
                   onClick={handleLogout}
                   className={
-                    `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-lg font-semibold text-green-900 hover:bg-green-100 w-full justify-start`
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-lg font-semibold text-red-600 hover:bg-red-100 w-full justify-start`
                   }
                 >
                   <LogOut className="h-6 w-6" />
