@@ -1,29 +1,19 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, CloudRain, Calculator, Bug, Sprout, Bell, Radio } from "lucide-react";
+import { CloudRain, Calculator, Bug, Sprout, Bell, Radio } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import WeatherWidget from "@/components/WeatherWidget";
+import { FarmOverview } from "@/components/FarmOverview";
+import { useAuth } from "@/hooks/useAuth";
+import { useFarm } from "@/hooks/useFarm";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("");
-  const [iotEnabled, setIotEnabled] = useState(false);
-
-  useEffect(() => {
-    const user = localStorage.getItem("smartfarm_user");
-    if (!user) {
-      navigate("/");
-    } else {
-      setUserName(user.split("@")[0]);
-      try {
-        const userData = JSON.parse(localStorage.getItem("smartfarm_user") || "{}");
-        setIotEnabled(userData.iotEnabled || false);
-      } catch (e) {
-        console.error("Error parsing user data", e);
-      }
-    }
-  }, [navigate]);
+  const { user } = useAuth();
+  const { farmProfile } = useFarm();
+  
+  const userName = user?.email?.split("@")[0] || "Farmer";
+  const iotEnabled = farmProfile?.iot_enabled || false;
 
   // AI-generated farming tips (simulated)
   const farmingTips = [
@@ -154,19 +144,7 @@ const Dashboard = () => {
         )}
 
         {/* Farm Overview */}
-        <Card className="shadow-soft">
-          <CardHeader className="p-4 md:p-6">
-            <CardTitle className="text-base md:text-lg">Farm Overview</CardTitle>
-            <CardDescription className="text-xs md:text-sm">Your registered fields</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6 pt-0">
-            <div className="text-center py-6 md:py-8 text-muted-foreground">
-              <Sprout className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-2 md:mb-3 opacity-50" />
-              <p className="text-xs md:text-sm mb-3">No fields registered yet</p>
-              <Button onClick={() => navigate("/profile")} size="sm">Set Up Farm Profile</Button>
-            </div>
-          </CardContent>
-        </Card>
+        <FarmOverview />
       </main>
     </div>
   );

@@ -10,63 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    farmName: "",
-    email: "",
-    location: "",
-    farmSize: "",
-    irrigationMethod: "",
-    farmingType: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Password validation
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    
-    if (!passwordRegex.test(formData.password)) {
-      toast({
-        title: "Invalid Password",
-        description: "Password must meet all requirements",
-        variant: "destructive",
-      });
-      return;
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
     }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Passwords Don't Match",
-        description: "Please make sure your passwords match",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Store user data (simplified - in production would use backend)
-    const userData = {
-      farmName: formData.farmName,
-      email: formData.email,
-      location: formData.location,
-      farmSize: parseFloat(formData.farmSize),
-      irrigationMethod: formData.irrigationMethod,
-      farmingType: formData.farmingType,
-    };
-
-    localStorage.setItem("smartfarm_user", JSON.stringify(userData));
-
-    toast({
-      title: "Account Created!",
-      description: "Welcome to Smart Farm",
-    });
-
-    navigate("/dashboard");
-  };
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
