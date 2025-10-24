@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Plus, Trash2, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Field {
   id: string;
@@ -20,9 +22,11 @@ interface Field {
 const FarmProfileSetup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [fields, setFields] = useState<Field[]>([]);
   const [showAddField, setShowAddField] = useState(false);
   const [iotEnabled, setIotEnabled] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [newField, setNewField] = useState({
     name: "",
     size: "",
@@ -31,7 +35,58 @@ const FarmProfileSetup = () => {
     growthStage: "seedling",
   });
 
-  const handleAddField = () => {
+  useEffect(() => {
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
+
+  const loadProfile = async () => {
+    if (!user) return;
+
+    try {
+      // Load profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        setIotEnabled(profile.iot_enabled || false);
+      }
+
+      // Load fields
+      const { data: fieldsData } = await supabase
+        .from("fields")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (fieldsData) {
+        setFields(
+          fieldsData.map((f) => ({
+            id: f.id,
+            name: f.name,
+            size: f.size,
+            crop: f.crop,
+            plantingDate: f.planting_date,
+            growthStage: f.growth_stage,
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Error loading profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile data",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddField = async () => {
     if (!newField.name || !newField.size || !newField.plantingDate) {
       toast({
         title: "Missing Information",
@@ -41,53 +96,112 @@ const FarmProfileSetup = () => {
       return;
     }
 
-    const field: Field = {
-      id: Date.now().toString(),
-      name: newField.name,
-      size: parseFloat(newField.size),
-      crop: newField.crop,
-      plantingDate: newField.plantingDate,
-      growthStage: newField.growthStage,
-    };
+    if (!user) return;
 
-    setFields([...fields, field]);
-    setNewField({
-      name: "",
-      size: "",
-      crop: "maize",
-      plantingDate: "",
-      growthStage: "seedling",
-    });
-    setShowAddField(false);
+    try {
+      const { data, error } = await supabase
+        .from("fields")
+        .insert({
+          user_id: user.id,
+          name: newField.name,
+          size: parseFloat(newField.size),
+          crop: newField.crop,
+          planting_date: newField.plantingDate,
+          growth_stage: newField.growthStage,
+        })
+        .select()
+        .single();
 
-    toast({
-      title: "Field Added",
-      description: `${field.name} has been added to your farm`,
-    });
+      if (error) throw error;
+
+      const field: Field = {
+        id: data.id,
+        name: data.name,
+        size: data.size,
+        crop: data.crop,
+        plantingDate: data.planting_date,
+        growthStage: data.growth_stage,
+      };
+
+      setFields([...fields, field]);
+      setNewField({
+        name: "",
+        size: "",
+        crop: "maize",
+        plantingDate: "",
+        growthStage: "seedling",
+      });
+      setShowAddField(false);
+
+      toast({
+        title: "Field Added",
+        description: `${field.name} has been added to your farm`,
+      });
+    } catch (error) {
+      console.error("Error adding field:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add field",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleRemoveField = (id: string) => {
-    setFields(fields.filter((f) => f.id !== id));
-    toast({
-      title: "Field Removed",
-      description: "Field has been removed from your farm",
-    });
+  const handleRemoveField = async (id: string) => {
+    try {
+      const { error } = await supabase.from("fields").delete().eq("id", id);
+
+      if (error) throw error;
+
+      setFields(fields.filter((f) => f.id !== id));
+      toast({
+        title: "Field Removed",
+        description: "Field has been removed from your farm",
+      });
+    } catch (error) {
+      console.error("Error removing field:", error);
+      toast({
+        title: "Error",
+        description: "Failed to remove field",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSaveProfile = () => {
-    // Save to localStorage (in production would use backend)
-    const userData = JSON.parse(localStorage.getItem("smartfarm_user") || "{}");
-    userData.fields = fields;
-    userData.iotEnabled = iotEnabled;
-    localStorage.setItem("smartfarm_user", JSON.stringify(userData));
+  const handleSaveProfile = async () => {
+    if (!user) return;
 
-    toast({
-      title: "Profile Saved",
-      description: "Your farm profile has been updated",
-    });
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ iot_enabled: iotEnabled })
+        .eq("id", user.id);
 
-    navigate("/dashboard");
+      if (error) throw error;
+
+      toast({
+        title: "Profile Saved",
+        description: "Your farm profile has been updated",
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save profile",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30 pb-20 md:pb-6">
